@@ -5,18 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Bloco de Notas</title>
+    <style>
+        #container {
+            max-width: 800px;
+            margin: 20px auto;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
     <header></header>
     <main>
-        <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">Bloco de Notas</label>
-            <textarea class="form-control" id="texto_digitado" rows="3"></textarea>
-            <button id="btn_adicionar" type="button" class="btn btn-secondary">Botão</button>
-          </div>
+        <div id="container">
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Bloco de Notas</label>
+                <textarea class="form-control" id="texto_digitado" rows="3" placeholder="Escreva sua nota"></textarea>
+              </div>
+              <div id="botoes">
+                <button id="btn_adicionar" type="button" class="btn btn-secondary">Salvar</button>
+                <button id="btn_atualizar" type="button" class="btn btn-primary" disabled="true">Atualizar</button>
+              </div>
+              <div id="listaDeNotas">
+                <ul id="listar_notas"></ul>
+              </div>
+        </div>
     </main>
     <script>
-        const textoDigitado = document.getElementById('texto_digitado');
+        let textoDigitado = document.getElementById('texto_digitado');
+        let btnAtualizar = document.getElementById('btn_atualizar');
+        var notas = JSON.parse(localStorage.getItem("notas"));
+        const removerItem = (indeceEscolhido) => {
+            notas.splice(indeceEscolhido, 1);
+            localStorage.setItem("notas", JSON.stringify(notas));
+            atualizaLista();
+        }
+        const editar = (indece) => {
+            notas[indece] = "Pao";
+            localStorage.setItem("notas", JSON.stringify(notas));
+        }
+
+
+        const atualizaLista = () => {
+            const notasArmazenadas = JSON.parse(localStorage.getItem("notas"));
+            const listar = document.getElementById('listar_notas');
+
+            listar.innerHTML = "";
+
+            notasArmazenadas.forEach((element, index) => {
+                let liFilhos = document.createElement("li");
+                liFilhos.textContent = element;
+
+                liFilhos.addEventListener('dblclick', () => {
+                    if (confirm("Deseja remover o item?")) {
+                        removerItem(index);
+                        window.alert("Item exluído");
+                    }
+                    else {
+                        window.alert("Item não removido!");
+                    }
+                });
+                liFilhos.addEventListener('click', () => {
+                    btnAtualizar.disabled = false;
+                })
+
+                listar.appendChild(liFilhos);
+            });
+        }
+
         document.getElementById('btn_adicionar').addEventListener('click', () =>{
             if (textoDigitado.value === "") {
                 alert("Preencha o bloco de notas!");
@@ -26,13 +81,16 @@
             if (localStorage.getItem("notas") === null) {
                 let array = [];
                 array.push(textoDigitado.value);
-                localStorage.setItem("notas", JSON.stringify(array))
+                localStorage.setItem("notas", JSON.stringify(array));
             } else{
-                let notas = JSON.parse(localStorage.getItem("notas"));
                 notas.push(textoDigitado.value);
                 localStorage.setItem("notas", JSON.stringify(notas));
             }
+            atualizaLista();
         });
+        
+
+        atualizaLista();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
