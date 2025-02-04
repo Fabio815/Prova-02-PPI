@@ -89,13 +89,13 @@
         </div>
     </main>
     <script>
-        const display = document.getElementById('display');
+        var display = document.getElementById('display');
         function insirido(valor) {
           display.value += valor;
         }
 
         function limpar() {
-          document.getElementById('display').value = '';
+          display.value = "";
         }
 
         document.getElementById('resultado').addEventListener('click', () =>{
